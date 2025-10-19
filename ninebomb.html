@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nine b💣mb</title>
+<style>
+body {
+  margin:0; padding:0;
+  font-family: Arial, sans-serif;
+  background:#222; color:#fff;
+  text-align:center;
+}
+h1 { margin:10px 0; font-size:24px; }
+#grid-container { width:90vw; max-width:300px; margin:10px auto; }
+#grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; }
+.cell {
+  background:#ccc;
+  border-radius:8px;
+  aspect-ratio:1/1;
+  transition: background 0.2s;
+}
+#status { font-size:16px; margin:5px; }
+#controls { display:flex; justify-content:center; max-width:300px; margin:10px auto; }
+.control-container {
+  display:grid;
+  grid-template-columns:repeat(3,70px);
+  grid-template-rows:repeat(3,70px);
+  gap:5px;
+}
+.control-btn {
+  font-size:1.5em; border-radius:10px; background:#2196F3; color:#fff; border:none;
+}
+#bombBtn { background:#FF4C4C; width:70px; height:70px; border-radius:10px; border:none; }
+.empty { background:transparent; pointer-events:none; }
+</style>
+</head>
+<body>
+<h1>nine b💣mb</h1>
+<div id="grid-container">
+  <div id="grid"></div>
+</div>
+<div id="status">勝:0 連勝:0</div>
+
+<div id="controls">
+  <div class="control-container">
+    <div class="empty"></div>
+    <button class="control-btn" data-dir="up">↑</button>
+    <div class="empty"></div>
+    <button class="control-btn" data-dir="left">←</button>
+    <div class="empty"></div>
+    <button class="control-btn" data-dir="right">→</button>
+    <div class="empty"></div>
+    <button class="control-btn" data-dir="down">↓</button>
+    <div class="empty"></div>
+  </div>
+  <div style="display:flex; align-items:center; margin-left:20px;">
+    <button id="bombBtn"></button>
+  </div>
+</div>
+
+<script>
+const gridSize=3;
+let playerPos={x:2,y:2};
+let enemyPos={x:0,y:0};
+let bombPositions=[];
+let gameStarted=false;
+let gameOver=false;
+let enemyPause=false;
+let moveInterval;
+let enemyBombCooldown=0;
+let playerVisible=true;
+let wins=0, streak=0;
+
+const grid=document.getElementById("grid");
+const statusDiv=document.getElementById("status");
+const bombBtn=document.getElementById("bombBtn");
+
+function createGrid(){
+  grid.innerHTML="";
+  for(let i=0;i<gridSize*gridSize;i++){
+    const cell=document.createElement("div");
+    cell.className="cell";
+    grid.appendChild(cell);
+  }
+  renderCharacters();
+}
+
+function renderCharacters(){
+  const cells=document.querySelectorAll(".cell");
+  cells.forEach(c=>c.style.background="#ccc");
+  bombPositions.forEach(b=>{
+    const idx=b.y*gridSize + b.x;
+    cells[idx].style.background="#FF4C4C";
+  });
+  if(!gameOver || (gameOver && !playerVisible)){
+    const eIdx=enemyPos.y*gridSize + enemyPos.x;
+    cells[eIdx].style.background="#E91E63";
+  }
+  if(playerVisible){
+    const pIdx=playerPos.y*gridSize + playerPos.x;
+    cells[pIdx].style.background="#4CAF50";
+  }
+}
+
+function canMove(x,y){
+  if(x<0 || x>=gridSize || y<0 || y>=gridSize) return false;
+  if(bombPositions.some(b=>b.x===x && b.y===y)) return false;
+  return true;
+}
+
+function move(direction){
+  if(!gameStarted||gameOver) return;
+  let nx=playerPos.x, ny=playerPos.y;
+  if(direction==="up") ny--;
+  if(direction==="down") ny++;
+  if(direction==="left") nx--;
+  if(direction==="right") nx++;
+  if(canMove(nx,ny) && !(nx===enemyPos.x && ny===enemyPos.y)){
+    playerPos={x:nx,y:ny};
+  }
+  renderCharacters();
+}
+
+function placeBomb(pos=playerPos){
+  if(!gameStarted||gameOver) return;
+  if(bombPositions.some(p=>p.x===pos.x && p.y===pos.y)) return;
+  bombPositions.push({...pos});
+  renderCharacters();
+
+  // 敵は爆弾設置後2マス移動して爆発まで待機
+  enemyPause=true;
+  moveEnemyStep(2, ()=> { enemyPause=false; });
+
+  setTimeout(()=>explode(pos.x,pos.y),600);
+}
+
+function moveEnemyStep(steps, callback){
+  if(steps<=0){ if(callback) callback(); return; }
+  const dirs=[{x:0,y:1},{x:0,y:-1},{x:1,y:0},{x:-1,y:0}].sort(()=>Math.random()-0.5);
+  for(let dir of dirs){
+    let nx=enemyPos.x+dir.x, ny=enemyPos.y+dir.y;
+    if(canMove(nx,ny) && !(nx===playerPos.x && ny===playerPos.y)){
+      enemyPos={x:nx,y:ny};
+      renderCharacters();
+      setTimeout(()=>moveEnemyStep(steps-1, callback),200);
+      break;
+    }
+  }
+}
+
+function explode(x,y){
+  const cells=document.querySelectorAll(".cell");
+  const dirs=[[0,0],[-1,0],[1,0],[0,-1],[0,1]];
+  dirs.forEach(([dx,dy])=>{
+    const r=y+dy, c=x+dx;
+    if(r>=0&&r<gridSize&&c>=0&&c<gridSize){
+      const idx=r*gridSize+c;
+      cells[idx].style.background="#FFFF66";
+    }
+  });
+  if(dirs.some(([dx,dy])=>playerPos.x===x+dx && playerPos.y===y+dy)){
+    gameOver=true; playerVisible=false;
+    statusDiv.textContent="game over"; streak=0;
+  }
+  if(dirs.some(([dx,dy])=>enemyPos.x===x+dx && enemyPos.y===y+dy)){
+    gameOver=true;
+    statusDiv.textContent="nice game!";
+    wins++; streak++;
+  }
+  setTimeout(()=>{
+    bombPositions=bombPositions.filter(b=>!(b.x===x&&b.y===y));
+    renderCharacters();
+    if(gameOver) {playerPos={x:2,y:2}; enemyPos={x:0,y:0};}
+  },100);
+}
+
+function moveEnemyRandom(){
+  if(!gameStarted||gameOver||enemyPause) return;
+  const dirs=[{x:0,y:1},{x:0,y:-1},{x:1,y:0},{x:-1,y:0}].sort(()=>Math.random()-0.5);
+  for(let dir of dirs){
+    let nx=enemyPos.x+dir.x, ny=enemyPos.y+dir.y;
+    if(canMove(nx,ny) && !(nx===playerPos.x && ny===playerPos.y)){
+      enemyPos={x:nx,y:ny};
+      break;
+    }
+  }
+  renderCharacters();
+  if(enemyBombCooldown<=0){
+    placeBomb(enemyPos);
+    enemyBombCooldown=3;
+  }else enemyBombCooldown--;
+}
+
+function startGame(){
+  playerPos={x:2,y:2}; enemyPos={x:0,y:0};
+  bombPositions=[]; gameStarted=true; gameOver=false; playerVisible=true;
+  enemyPause=false;
+  statusDiv.textContent=`勝:${wins} 連勝:${streak}`;
+  renderCharacters();
+  clearInterval(moveInterval);
+  moveInterval=setInterval(moveEnemyRandom,400);
+}
+
+// --- イベント ---
+bombBtn.addEventListener("click",()=>{ if(!gameStarted) startGame(); placeBomb(); });
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter") startGame();
+  if(!gameStarted||gameOver) return;
+  if(e.key==="ArrowUp") move("up");
+  if(e.key==="ArrowDown") move("down");
+  if(e.key==="ArrowLeft") move("left");
+  if(e.key==="ArrowRight") move("right");
+  if(e.key===" ") placeBomb();
+});
+document.querySelectorAll(".control-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>move(btn.dataset.dir));
+});
+
+createGrid();
+</script>
+</body>
+</html>
