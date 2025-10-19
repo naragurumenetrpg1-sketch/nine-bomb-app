@@ -1,0 +1,462 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.7">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ja"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1">&lt;title&gt;nine b💣mb&lt;/title&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">body {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin:0; padding:0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-family: Arial, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background:#222; color:#fff;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-align:center;</p>
+<p class="p1">}</p>
+<p class="p1">h1 { margin:10px 0; font-size:24px; }</p>
+<p class="p1">#grid-container { width:90vw; max-width:300px; margin:10px auto; }</p>
+<p class="p1">#grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; }</p>
+<p class="p1">.cell {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background:#ccc;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius:8px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>aspect-ratio:1/1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: background 0.2s;</p>
+<p class="p1">}</p>
+<p class="p1">#status { font-size:16px; margin:5px; }</p>
+<p class="p1">#controls { display:flex; justify-content:center; max-width:300px; margin:10px auto; }</p>
+<p class="p1">.control-container {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display:grid;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>grid-template-columns:repeat(3,70px);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>grid-template-rows:repeat(3,70px);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap:5px;</p>
+<p class="p1">}</p>
+<p class="p1">.control-btn {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size:1.5em; border-radius:10px; background:#2196F3; color:#fff; border:none;</p>
+<p class="p1">}</p>
+<p class="p1">#bombBtn { background:#FF4C4C; width:70px; height:70px; border-radius:10px; border:none; }</p>
+<p class="p1">.empty { background:transparent; pointer-events:none; }</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1">&lt;h1&gt;nine b💣mb&lt;/h1&gt;</p>
+<p class="p1">&lt;div id="grid-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="grid"&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p1">&lt;div id="status"&gt;勝:0 連勝:0&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div id="controls"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="control-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="empty"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="control-btn" data-dir="up"&gt;↑&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="empty"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="control-btn" data-dir="left"&gt;←&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="empty"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="control-btn" data-dir="right"&gt;→&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="empty"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="control-btn" data-dir="down"&gt;↓&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="empty"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div style="display:flex; align-items:center; margin-left:20px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="bombBtn"&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">const gridSize=3;</p>
+<p class="p1">let playerPos={x:2,y:2};</p>
+<p class="p1">let enemyPos={x:0,y:0};</p>
+<p class="p1">let bombPositions=[];</p>
+<p class="p1">let gameStarted=false;</p>
+<p class="p1">let gameOver=false;</p>
+<p class="p1">let enemyPause=false;</p>
+<p class="p1">let moveInterval;</p>
+<p class="p1">let enemyBombCooldown=0;</p>
+<p class="p1">let playerVisible=true;</p>
+<p class="p1">let wins=0, streak=0;</p>
+<p class="p2"><br></p>
+<p class="p1">const grid=document.getElementById("grid");</p>
+<p class="p1">const statusDiv=document.getElementById("status");</p>
+<p class="p1">const bombBtn=document.getElementById("bombBtn");</p>
+<p class="p2"><br></p>
+<p class="p1">function createGrid(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>grid.innerHTML="";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(let i=0;i&lt;gridSize*gridSize;i++){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const cell=document.createElement("div");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cell.className="cell";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>grid.appendChild(cell);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderCharacters();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderCharacters(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cells=document.querySelectorAll(".cell");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>cells.forEach(c=&gt;c.style.background="#ccc");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>bombPositions.forEach(b=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const idx=b.y*gridSize + b.x;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cells[idx].style.background="#FF4C4C";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!gameOver || (gameOver &amp;&amp; !playerVisible)){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const eIdx=enemyPos.y*gridSize + enemyPos.x;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cells[eIdx].style.background="#E91E63";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(playerVisible){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const pIdx=playerPos.y*gridSize + playerPos.x;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cells[pIdx].style.background="#4CAF50";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function canMove(x,y){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(x&lt;0 || x&gt;=gridSize || y&lt;0 || y&gt;=gridSize) return false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(bombPositions.some(b=&gt;b.x===x &amp;&amp; b.y===y)) return false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return true;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function move(direction){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!gameStarted||gameOver) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let nx=playerPos.x, ny=playerPos.y;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(direction==="up") ny--;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(direction==="down") ny++;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(direction==="left") nx--;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(direction==="right") nx++;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(canMove(nx,ny) &amp;&amp; !(nx===enemyPos.x &amp;&amp; ny===enemyPos.y)){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>playerPos={x:nx,y:ny};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderCharacters();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function placeBomb(pos=playerPos){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!gameStarted||gameOver) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(bombPositions.some(p=&gt;p.x===pos.x &amp;&amp; p.y===pos.y)) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>bombPositions.push({...pos});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderCharacters();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 敵は爆弾設置後2マス移動して爆発まで待機</p>
+<p class="p1"><span class="Apple-converted-space">  </span>enemyPause=true;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>moveEnemyStep(2, ()=&gt; { enemyPause=false; });</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(()=&gt;explode(pos.x,pos.y),600);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function moveEnemyStep(steps, callback){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(steps&lt;=0){ if(callback) callback(); return; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const dirs=[{x:0,y:1},{x:0,y:-1},{x:1,y:0},{x:-1,y:0}].sort(()=&gt;Math.random()-0.5);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(let dir of dirs){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let nx=enemyPos.x+dir.x, ny=enemyPos.y+dir.y;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(canMove(nx,ny) &amp;&amp; !(nx===playerPos.x &amp;&amp; ny===playerPos.y)){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>enemyPos={x:nx,y:ny};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderCharacters();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setTimeout(()=&gt;moveEnemyStep(steps-1, callback),200);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function explode(x,y){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cells=document.querySelectorAll(".cell");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const dirs=[[0,0],[-1,0],[1,0],[0,-1],[0,1]];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>dirs.forEach(([dx,dy])=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const r=y+dy, c=x+dx;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(r&gt;=0&amp;&amp;r&lt;gridSize&amp;&amp;c&gt;=0&amp;&amp;c&lt;gridSize){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const idx=r*gridSize+c;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cells[idx].style.background="#FFFF66";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(dirs.some(([dx,dy])=&gt;playerPos.x===x+dx &amp;&amp; playerPos.y===y+dy)){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gameOver=true; playerVisible=false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>statusDiv.textContent="game over"; streak=0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(dirs.some(([dx,dy])=&gt;enemyPos.x===x+dx &amp;&amp; enemyPos.y===y+dy)){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gameOver=true;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>statusDiv.textContent="nice game!";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>wins++; streak++;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>bombPositions=bombPositions.filter(b=&gt;!(b.x===x&amp;&amp;b.y===y));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderCharacters();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(gameOver) {playerPos={x:2,y:2}; enemyPos={x:0,y:0};}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>},100);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function moveEnemyRandom(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!gameStarted||gameOver||enemyPause) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const dirs=[{x:0,y:1},{x:0,y:-1},{x:1,y:0},{x:-1,y:0}].sort(()=&gt;Math.random()-0.5);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(let dir of dirs){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let nx=enemyPos.x+dir.x, ny=enemyPos.y+dir.y;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(canMove(nx,ny) &amp;&amp; !(nx===playerPos.x &amp;&amp; ny===playerPos.y)){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>enemyPos={x:nx,y:ny};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderCharacters();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(enemyBombCooldown&lt;=0){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>placeBomb(enemyPos);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>enemyBombCooldown=3;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}else enemyBombCooldown--;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function startGame(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>playerPos={x:2,y:2}; enemyPos={x:0,y:0};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>bombPositions=[]; gameStarted=true; gameOver=false; playerVisible=true;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>enemyPause=false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>statusDiv.textContent=`勝:${wins} 連勝:${streak}`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderCharacters();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>clearInterval(moveInterval);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>moveInterval=setInterval(moveEnemyRandom,400);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// --- イベント ---</p>
+<p class="p1">bombBtn.addEventListener("click",()=&gt;{ if(!gameStarted) startGame(); placeBomb(); });</p>
+<p class="p1">document.addEventListener("keydown",e=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key==="Enter") startGame();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!gameStarted||gameOver) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key==="ArrowUp") move("up");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key==="ArrowDown") move("down");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key==="ArrowLeft") move("left");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key==="ArrowRight") move("right");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key===" ") placeBomb();</p>
+<p class="p1">});</p>
+<p class="p1">document.querySelectorAll(".control-btn").forEach(btn=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.addEventListener("click",()=&gt;move(btn.dataset.dir));</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">createGrid();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ja"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1">&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1">&lt;title&gt;nine b💣mb&lt;/title&gt;</p>
+<p class="p1">&lt;style&gt;</p>
+<p class="p1">body {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>margin:0; padding:0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-family: Arial, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background:#222; color:#fff;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>text-align:center;</p>
+<p class="p1">}</p>
+<p class="p1">h1 { margin:10px 0; font-size:24px; }</p>
+<p class="p1">#grid-container { width:90vw; max-width:300px; margin:10px auto; }</p>
+<p class="p1">#grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; }</p>
+<p class="p1">.cell {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>background:#ccc;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>border-radius:8px;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>aspect-ratio:1/1;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>transition: background 0.2s;</p>
+<p class="p1">}</p>
+<p class="p1">#status { font-size:16px; margin:5px; }</p>
+<p class="p1">#controls { display:flex; justify-content:center; max-width:300px; margin:10px auto; }</p>
+<p class="p1">.control-container {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>display:grid;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>grid-template-columns:repeat(3,70px);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>grid-template-rows:repeat(3,70px);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>gap:5px;</p>
+<p class="p1">}</p>
+<p class="p1">.control-btn {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>font-size:1.5em; border-radius:10px; background:#2196F3; color:#fff; border:none;</p>
+<p class="p1">}</p>
+<p class="p1">#bombBtn { background:#FF4C4C; width:70px; height:70px; border-radius:10px; border:none; }</p>
+<p class="p1">.empty { background:transparent; pointer-events:none; }</p>
+<p class="p1">&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1">&lt;h1&gt;nine b💣mb&lt;/h1&gt;</p>
+<p class="p1">&lt;div id="grid-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="grid"&gt;&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p1">&lt;div id="status"&gt;勝:0 連勝:0&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div id="controls"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="control-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="empty"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="control-btn" data-dir="up"&gt;↑&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="empty"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="control-btn" data-dir="left"&gt;←&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="empty"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="control-btn" data-dir="right"&gt;→&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="empty"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="control-btn" data-dir="down"&gt;↓&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="empty"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div style="display:flex; align-items:center; margin-left:20px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="bombBtn"&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1">const gridSize=3;</p>
+<p class="p1">let playerPos={x:2,y:2};</p>
+<p class="p1">let enemyPos={x:0,y:0};</p>
+<p class="p1">let bombPositions=[];</p>
+<p class="p1">let gameStarted=false;</p>
+<p class="p1">let gameOver=false;</p>
+<p class="p1">let enemyPause=false;</p>
+<p class="p1">let moveInterval;</p>
+<p class="p1">let enemyBombCooldown=0;</p>
+<p class="p1">let playerVisible=true;</p>
+<p class="p1">let wins=0, streak=0;</p>
+<p class="p2"><br></p>
+<p class="p1">const grid=document.getElementById("grid");</p>
+<p class="p1">const statusDiv=document.getElementById("status");</p>
+<p class="p1">const bombBtn=document.getElementById("bombBtn");</p>
+<p class="p2"><br></p>
+<p class="p1">function createGrid(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>grid.innerHTML="";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(let i=0;i&lt;gridSize*gridSize;i++){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const cell=document.createElement("div");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cell.className="cell";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>grid.appendChild(cell);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderCharacters();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function renderCharacters(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cells=document.querySelectorAll(".cell");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>cells.forEach(c=&gt;c.style.background="#ccc");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>bombPositions.forEach(b=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const idx=b.y*gridSize + b.x;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cells[idx].style.background="#FF4C4C";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!gameOver || (gameOver &amp;&amp; !playerVisible)){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const eIdx=enemyPos.y*gridSize + enemyPos.x;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cells[eIdx].style.background="#E91E63";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(playerVisible){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const pIdx=playerPos.y*gridSize + playerPos.x;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>cells[pIdx].style.background="#4CAF50";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function canMove(x,y){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(x&lt;0 || x&gt;=gridSize || y&lt;0 || y&gt;=gridSize) return false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(bombPositions.some(b=&gt;b.x===x &amp;&amp; b.y===y)) return false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>return true;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function move(direction){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!gameStarted||gameOver) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>let nx=playerPos.x, ny=playerPos.y;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(direction==="up") ny--;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(direction==="down") ny++;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(direction==="left") nx--;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(direction==="right") nx++;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(canMove(nx,ny) &amp;&amp; !(nx===enemyPos.x &amp;&amp; ny===enemyPos.y)){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>playerPos={x:nx,y:ny};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderCharacters();</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function placeBomb(pos=playerPos){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!gameStarted||gameOver) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(bombPositions.some(p=&gt;p.x===pos.x &amp;&amp; p.y===pos.y)) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>bombPositions.push({...pos});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderCharacters();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// 敵は爆弾設置後2マス移動して爆発まで待機</p>
+<p class="p1"><span class="Apple-converted-space">  </span>enemyPause=true;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>moveEnemyStep(2, ()=&gt; { enemyPause=false; });</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(()=&gt;explode(pos.x,pos.y),600);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function moveEnemyStep(steps, callback){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(steps&lt;=0){ if(callback) callback(); return; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const dirs=[{x:0,y:1},{x:0,y:-1},{x:1,y:0},{x:-1,y:0}].sort(()=&gt;Math.random()-0.5);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(let dir of dirs){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let nx=enemyPos.x+dir.x, ny=enemyPos.y+dir.y;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(canMove(nx,ny) &amp;&amp; !(nx===playerPos.x &amp;&amp; ny===playerPos.y)){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>enemyPos={x:nx,y:ny};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>renderCharacters();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setTimeout(()=&gt;moveEnemyStep(steps-1, callback),200);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function explode(x,y){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const cells=document.querySelectorAll(".cell");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const dirs=[[0,0],[-1,0],[1,0],[0,-1],[0,1]];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>dirs.forEach(([dx,dy])=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const r=y+dy, c=x+dx;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(r&gt;=0&amp;&amp;r&lt;gridSize&amp;&amp;c&gt;=0&amp;&amp;c&lt;gridSize){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const idx=r*gridSize+c;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cells[idx].style.background="#FFFF66";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(dirs.some(([dx,dy])=&gt;playerPos.x===x+dx &amp;&amp; playerPos.y===y+dy)){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gameOver=true; playerVisible=false;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>statusDiv.textContent="game over"; streak=0;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(dirs.some(([dx,dy])=&gt;enemyPos.x===x+dx &amp;&amp; enemyPos.y===y+dy)){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>gameOver=true;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>statusDiv.textContent="nice game!";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>wins++; streak++;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>setTimeout(()=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">    </span>bombPositions=bombPositions.filter(b=&gt;!(b.x===x&amp;&amp;b.y===y));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>renderCharacters();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(gameOver) {playerPos={x:2,y:2}; enemyPos={x:0,y:0};}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>},100);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function moveEnemyRandom(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!gameStarted||gameOver||enemyPause) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const dirs=[{x:0,y:1},{x:0,y:-1},{x:1,y:0},{x:-1,y:0}].sort(()=&gt;Math.random()-0.5);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>for(let dir of dirs){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>let nx=enemyPos.x+dir.x, ny=enemyPos.y+dir.y;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if(canMove(nx,ny) &amp;&amp; !(nx===playerPos.x &amp;&amp; ny===playerPos.y)){</p>
+<p class="p1"><span class="Apple-converted-space">      </span>enemyPos={x:nx,y:ny};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>break;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderCharacters();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(enemyBombCooldown&lt;=0){</p>
+<p class="p1"><span class="Apple-converted-space">    </span>placeBomb(enemyPos);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>enemyBombCooldown=3;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}else enemyBombCooldown--;</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">function startGame(){</p>
+<p class="p1"><span class="Apple-converted-space">  </span>playerPos={x:2,y:2}; enemyPos={x:0,y:0};</p>
+<p class="p1"><span class="Apple-converted-space">  </span>bombPositions=[]; gameStarted=true; gameOver=false; playerVisible=true;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>enemyPause=false;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>statusDiv.textContent=`勝:${wins} 連勝:${streak}`;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>renderCharacters();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>clearInterval(moveInterval);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>moveInterval=setInterval(moveEnemyRandom,400);</p>
+<p class="p1">}</p>
+<p class="p2"><br></p>
+<p class="p1">// --- イベント ---</p>
+<p class="p1">bombBtn.addEventListener("click",()=&gt;{ if(!gameStarted) startGame(); placeBomb(); });</p>
+<p class="p1">document.addEventListener("keydown",e=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key==="Enter") startGame();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(!gameStarted||gameOver) return;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key==="ArrowUp") move("up");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key==="ArrowDown") move("down");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key==="ArrowLeft") move("left");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key==="ArrowRight") move("right");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>if(e.key===" ") placeBomb();</p>
+<p class="p1">});</p>
+<p class="p1">document.querySelectorAll(".control-btn").forEach(btn=&gt;{</p>
+<p class="p1"><span class="Apple-converted-space">  </span>btn.addEventListener("click",()=&gt;move(btn.dataset.dir));</p>
+<p class="p1">});</p>
+<p class="p2"><br></p>
+<p class="p1">createGrid();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
