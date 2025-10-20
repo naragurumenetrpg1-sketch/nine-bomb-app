@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>-NINE B💣MB-</title>
+<style>
+  :root{ --cell-size: calc(min(22vw,90px)); }
+  body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#222;
+    color:#fff;
+    text-align:center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation; /* ← ダブルタップズーム無効 */
+  }
+  h1{ margin:12px 0; font-size:20px; }
+  #grid{ width:90vw; max-width:320px; margin:8px auto; display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .cell{ background:#ccc; border-radius:8px; aspect-ratio:1/1; transition:background .12s; }
+  #status{ margin:8px 0; font-size:14px; }
+  #controller{ display:flex; justify-content:center; align-items:flex-start; gap:30px; margin:10px auto 24px; max-width:460px; }
+
+  /* 十字ボタン配置（中央空白） */
+  #dpad{
+    display:grid;
+    grid-template-columns:70px 70px 70px;
+    grid-template-rows:70px 70px 70px;
+    gap:8px;
+  }
+  .btn{
+    width:70px; height:70px;
+    border-radius:12px; border:none;
+    background:#2196F3; color:#fff; font-size:22px; font-weight:bold;
+    cursor:pointer;
+    transition: transform 0.05s;
+  }
+  .btn:active{ background:#1976D2; transform:scale(0.96); }
+  .blank{ background:transparent; pointer-events:none; }
+
+  #side-controls{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+  #bombBtn{
+    width:80px; height:80px;
+    background:#FF4C4C; border-radius:12px; border:none;
+    color:#fff; font-weight:600; font-size:16px; cursor:pointer;
+  }
+  #bombBtn:active{ background:#E33; transform:scale(0.96); }
+  #resetBtn{
+    width:80px; height:38px;
+    background:#777; border:none; border-radius:8px; color:#fff; cursor:pointer;
+  }
+
+  @media (max-width:520px){
+    :root{ --cell-size: calc(min(44vw,72px)); }
+    #dpad{ grid-template-columns:60px 60px 60px; grid-template-rows:60px 60px 60px; gap:6px; }
+    .btn{ width:60px; height:60px; font-size:18px; }
+    #bombBtn{ width:68px; height:68px; }
+    #resetBtn{ width:68px; height:34px; }
+  }
+</style>
+</head>
+<body>
+  <h1>-NINE B💣MB-</h1>
+
+  <div id="grid"></div>
+  <div id="status">WIN: 0&nbsp;&nbsp;LOSE: 0&nbsp;&nbsp;STREAK: 0</div>
+
+  <div id="controller">
+    <div id="dpad">
+      <div class="blank"></div>
+      <button class="btn" data-dir="up">↑</button>
+      <div class="blank"></div>
+
+      <button class="btn" data-dir="left">←</button>
+      <div class="blank"></div>
+      <button class="btn" data-dir="right">→</button>
+
+      <div class="blank"></div>
+      <button class="btn" data-dir="down">↓</button>
+      <div class="blank"></div>
+    </div>
+
+    <div id="side-controls">
+      <button id="bombBtn">BOMB</button>
+      <button id="resetBtn">RESET</button>
+    </div>
+  </div>
+
+<script>
+/* === 設定 === */
+const GRID = 3;
+const EXPLODE_DELAY = 700;
+const EXPLODE_SHOW = 400;
+const ENEMY_MOVE_INTERVAL = 500;
+const ENEMY_MOVE_AFTER_BOMB_STEPS = 2;
+
+/* === 状態 === */
+let player = { x: 2, y: 2 };
+let enemy  = { x: 0, y: 0 };
+let bombs  = [];
+let gameStarted = false;
+let gameOver = false;
+let enemyPaused = false;
+let enemyBombCooldown = 0;
+let wins = 0, losses = 0, streak = 0;
+let enemyTimer = null;
+
+/* === DOM === */
+const gridEl = document.getElementById('grid');
+const statusEl = document.getElementById('status');
+const bombBtn = document.getElementById('bombBtn');
+const resetBtn = document.getElementById('resetBtn');
+const dpadBtns = Array.from(document.querySelectorAll('#dpad .btn'));
+
+/* === 初期化 === */
+function createGrid(){
+  gridEl.innerHTML = '';
+  for(let i=0;i<GRID*GRID;i++){
+    const c = document.createElement('div');
+    c.className = 'cell';
+    gridEl.appendChild(c);
+  }
+  render();
+}
+function cellIndex(x,y){ return y*GRID + x; }
+
+/* === 描画 === */
+function render(){
+  const cells = gridEl.querySelectorAll('.cell');
+  cells.forEach(c => c.style.background = '#ccc');
+
+  bombs.forEach(b => {
+    const idx = cellIndex(b.x,b.y);
+    cells[idx].style.background = '#FF4C4C';
+  });
+
+  const eIdx = cellIndex(enemy.x, enemy.y);
+  cells[eIdx].style.background = '#E91E63';
+
+  const pIdx = cellIndex(player.x, player.y);
+  cells[pIdx].style.background = '#4CAF50';
+}
+
+/* === 移動 === */
+function canMoveTo(x,y){
+  if(x<0||x>=GRID||y<0||y>=GRID) return false;
+  if(bombs.some(b=>b.x===x && b.y===y)) return false;
+  return true;
+}
+
+function movePlayer(dir){
+  if(!gameStarted || gameOver) return;
+  let nx = player.x, ny = player.y;
+  if(dir === 'up') ny--;
+  if(dir === 'down') ny++;
+  if(dir === 'left') nx--;
+  if(dir === 'right') nx++;
+  if(canMoveTo(nx,ny) && !(nx===enemy.x && ny===enemy.y)){
+    player.x = nx; player.y = ny;
+    render();
+  }
+}
+
+/* === 爆弾 === */
+function placeBombAt(x,y,byEnemy=false){
+  if(!gameStarted || gameOver) return;
+  if(bombs.some(b=>b.x===x && b.y===y)) return;
+  bombs.push({x,y});
+  render();
+
+  if(!byEnemy){
+    enemyPaused = true;
+    moveEnemySteps(ENEMY_MOVE_AFTER_BOMB_STEPS);
+  } else {
+    enemyPaused = true;
+    moveEnemySteps(ENEMY_MOVE_AFTER_BOMB_STEPS);
+  }
+
+  setTimeout(()=>explodeAt(x,y),EXPLODE_DELAY);
+}
+
+function explodeAt(x,y){
+  const blast = [
+    {x,y},{x:x-1,y},{x:x+1,y},{x,y:y-1},{x,y:y+1}
+  ].filter(p=>p.x>=0 && p.x<GRID && p.y>=0 && p.y<GRID);
+  const cells = gridEl.querySelectorAll('.cell');
+  blast.forEach(p=>{
+    cells[cellIndex(p.x,p.y)].style.background = '#FFFF33';
+  });
+
+  const hitP = blast.some(p=>p.x===player.x && p.y===player.y);
+  const hitE = blast.some(p=>p.x===enemy.x && p.y===enemy.y);
+
+  if(hitP && !hitE){ gameOver=true; losses++; streak=0; updateStatus('GAME OVER'); }
+  else if(hitE && !hitP){ gameOver=true; wins++; streak++; updateStatus('NICE GAME!'); }
+  else if(hitE && hitP){ gameOver=true; streak=0; updateStatus('DRAW'); }
+
+  bombs = bombs.filter(b=>!(b.x===x && b.y===y));
+
+  setTimeout(()=>{
+    render();
+    enemyPaused=false;
+    if(gameOver){ resetPositions(); stopEnemyTimer(); }
+  },EXPLODE_SHOW);
+}
+
+/* === 敵行動 === */
+function moveEnemyRandom(){
+  if(!gameStarted || gameOver || enemyPaused) return;
+  const dirs=[{x:0,y:1},{x:0,y:-1},{x:1,y:0},{x:-1,y:0}].sort(()=>Math.random()-0.5);
+  for(const d of dirs){
+    const nx=enemy.x+d.x, ny=enemy.y+d.y;
+    if(canMoveTo(nx,ny) && !(nx===player.x && ny===player.y)){
+      enemy.x=nx; enemy.y=ny; break;
+    }
+  }
+  render();
+  if(enemyBombCooldown<=0 && Math.random()<0.25){
+    placeBombAt(enemy.x,enemy.y,true);
+    enemyBombCooldown=3;
+  } else {
+    enemyBombCooldown=Math.max(0,enemyBombCooldown-1);
+  }
+}
+function moveEnemySteps(steps){
+  if(steps<=0) return;
+  const dirs=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}].sort(()=>Math.random()-0.5);
+  for(const d of dirs){
+    const nx=enemy.x+d.x, ny=enemy.y+d.y;
+    if(canMoveTo(nx,ny) && !(nx===player.x && ny===player.y)){
+      enemy.x=nx; enemy.y=ny; render();
+      setTimeout(()=>moveEnemySteps(steps-1),100);
+      return;
+    }
+  }
+  setTimeout(()=>moveEnemySteps(steps-1),100);
+}
+
+/* === 状態管理 === */
+function updateStatus(msg=''){
+  statusEl.textContent = (msg?msg+' ':'')+`WIN:${wins} LOSE:${losses} STREAK:${streak}`;
+}
+
+function startGame(){
+  if(enemyTimer) clearInterval(enemyTimer);
+  player={x:2,y:2}; enemy={x:0,y:0}; bombs=[];
+  gameStarted=true; gameOver=false; enemyPaused=false;
+  enemyBombCooldown=0;
+  render(); updateStatus();
+  enemyTimer=setInterval(moveEnemyRandom,ENEMY_MOVE_INTERVAL);
+}
+
+function resetAll(){
+  wins=0; losses=0; streak=0;
+  startGame();
+}
+function stopEnemyTimer(){ if(enemyTimer){ clearInterval(enemyTimer); enemyTimer=null; } }
+function resetPositions(){
+  stopEnemyTimer();
+  gameStarted=false;
+  setTimeout(()=>{
+    player={x:2,y:2}; enemy={x:0,y:0}; bombs=[];
+    enemyPaused=false; render(); updateStatus();
+  },250);
+}
+
+/* === 操作 === */
+dpadBtns.forEach(btn=>btn.addEventListener('click',()=>movePlayer(btn.dataset.dir)));
+bombBtn.addEventListener('click',()=>{
+  if(!gameStarted){ startGame(); return; }
+  placeBombAt(player.x,player.y,false);
+});
+resetBtn.addEventListener('click',resetAll);
+
+/* === キー操作 === */
+document.addEventListener('keydown',e=>{
+  if(e.key===' '){ e.preventDefault(); if(!gameStarted) startGame(); else placeBombAt(player.x,player.y,false); }
+  if(e.key==='Enter'){ if(!gameStarted) startGame(); }
+  if(!gameStarted||gameOver) return;
+  if(e.key==='ArrowUp') movePlayer('up');
+  if(e.key==='ArrowDown') movePlayer('down');
+  if(e.key==='ArrowLeft') movePlayer('left');
+  if(e.key==='ArrowRight') movePlayer('right');
+});
+
+/* === 初期化 === */
+createGrid();
+updateStatus();
+</script>
+</body>
+</html>
